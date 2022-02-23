@@ -7,7 +7,7 @@ output: html_document
 
 ```{r}
 
-
+test<-CA_Labor
 
 
 
