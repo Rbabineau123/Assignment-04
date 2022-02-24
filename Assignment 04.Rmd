@@ -6,9 +6,68 @@ output: html_document
 ---
 
 ```{r}
+#Data Visualization 1
 
-test<-CA_Labor
+library (ggplot2)
+library(tidyverse)
+library(haven)
 
+wage<-read_dta("WAGE1.DTA")
+
+#Adjusting currency to 2022 purchasing power
+
+wage<-wage%>%
+  mutate(wage_2022 = wage*4.96)
+
+#Creating Visualization 1
+
+
+ggplot(wage, aes(x = exper, y = wage_2022))+ 
+  geom_line(size = 1)+
+  geom_line(data=wage %>% 
+    filter(female == 1), (aes(color='Women')))+
+  geom_line(data=wage %>% filter(female == 0), (aes(color='Men')))+
+  labs(title = "Wage by Experience for Women and Men",
+          x="Years of Experience",
+          y="Wage (USD, Adjusted 2022 PP)",
+subtitle = "Data Population Survey 1976",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional Stata datasets for econometrics wage1, Boston College Department of Economics.")+
+  scale_color_manual(name='Gender',
+                     breaks=c('Women', 'Men'),
+                     values=c('Women'='purple',
+                      'Men'='black'))
+
+#This visualization shows hourly wage level by year of expected experience for both men and women. Women are represented by the purple line, while men are represented by the black line. The disparity between wage earned by men and women is observed at almost every level of experience, with exceptions near 1, 7 and 12 years of experience.
 
 
 ```
+```{r}
+
+#Data Visualization 2
+
+#Recoding Gender
+wage<-wage%>%
+  mutate(gender = case_when(
+    female == 0 ~ "Male",
+    female == 1 ~ "female"
+  ))
+
+wage%>%
+  ggplot()+
+  geom_point(mapping = aes(x = educ, y=wage, color=as.character(nonwhite)))+
+  facet_grid(~gender, labeller = label_both)+
+  labs(title = "Wage by Education Level, Male and Female",
+  subtitle = "Data Population Survey 1976",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional  Stata datasets for econometrics wage1, Boston College   
+Department of Economics.")
+
+
+
+
+  
+
+```
+
+
+```
+
