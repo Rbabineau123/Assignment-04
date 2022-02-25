@@ -21,11 +21,12 @@ wage<-wage%>%
 
 #Creating Visualization 1
 
-      
-Visualization_1<-ggplot(wage, aes(x = exper, y = wage_2022)) + 
+
+ggplot(wage, aes(x = exper, y = wage_2022))+ 
   geom_line(size = 1)+
-  geom_line(data=wage %>% filter(female == 1),(aes(color='Women')))+
-  geom_line(data=wage %>% filter(female == 0), (aes(color='Men')))+
+  geom_line(data=wage %>% 
+    filter(female == 1), (aes(color='Women')))+
+  geom_line(data=wage %>% filter(female == 0), (aes(color='Men', alpha = 0.5)))+
   labs(title = "Wage by Experience for Women and Men",
           x="Years of Experience",
           y="Wage (USD, Adjusted 2022 PP)",
@@ -33,8 +34,11 @@ subtitle = "Data Population Survey 1976",
 caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional Stata datasets for econometrics wage1, Boston College Department of Economics.")+
   scale_color_manual(name='Gender',
                      breaks=c('Women', 'Men'),
-                     values=c('Women'='purple', 'Men'='black'))
+                     values=c('Women'='purple',
+                      'Men'='black'))
 
+#Description:
+#This visualization shows hourly wage level by year of expected experience for both men and women. Women are represented by the purple line, while men are represented by the black line. The disparity between wage earned by men and women is observed at almost every level of experience, with exceptions near 1, 7 and 12 years of experience.
 
 
 ```
@@ -49,17 +53,40 @@ wage<-wage%>%
     female == 1 ~ "female"
   ))
 
+#Visualization 2:
 wage%>%
   ggplot()+
   geom_point(mapping = aes(x = educ, y=wage, color=as.character(nonwhite)))+
   facet_grid(~gender, labeller = label_both)+
   labs(title = "Wage by Education Level, Male and Female",
   subtitle = "Data Population Survey 1976",
+          x="Years of Education",
+          y="Wage (USD, Adjusted 2022 PP)",
 caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional  Stata datasets for econometrics wage1, Boston College   
 Department of Economics.")
 
 
 
+
+wage%>%
+  ggplot()+
+  geom_point(mapping = aes(x = educ, y=wage, color=as.character(nonwhite)))+
+  facet_grid(~gender, labeller = label_both)+
+  geom_smooth(mapping = aes(x = educ, y = wage),
+  stat = "smooth",
+  position = "identity")
+  labs(title = "Wage by Education Level, Male and Female",
+  subtitle = "Data Population Survey 1976",
+          x="Years of Education",
+          y="Wage (USD, Adjusted 2022 PP)",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional  Stata datasets for econometrics wage1, Boston College   
+Department of Economics.")
+
+
+
+
+#Description:
+#This visualization shows wage level (adjusted to 2022 purchasing power) by education level for both men and women. The facet grid function was used to compare returns to education between men and women. For both genders, wage level generally increases as years of education increases, which is supported by the line of best fit. The highest educated men earn higher wages than the highest educated women, however. Additionally, non-white individuals are represented in blue, while white individuals are represented in orange. Among the highest educated individuals, the highest earners are white. 
 
   
 
