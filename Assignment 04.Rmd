@@ -23,22 +23,6 @@ wage<-wage%>%
 
 
 ggplot(wage, aes(x = exper, y = wage_2022))+ 
-  geom_line(size = 1)+
-  geom_line(data=wage %>% 
-    filter(female == 1), (aes(color='Women', alpha = 1)))+
-  geom_line(data=wage %>% filter(female == 0), (aes(color='Men', alpha=0.5 )))+
-  labs(title = "Wage by Experience for Women and Men",
-          x="Years of Experience",
-          y="Wage (USD, Adjusted 2022 PP)",
-subtitle = "Data Population Survey 1976",
-caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional Stata datasets for econometrics wage1, Boston College Department of Economics.")+
-  scale_color_manual(name='Gender',
-                     breaks=c('Women', 'Men'),
-                     values=c('Women'='purple',
-                      'Men'='black'))
-
-
-ggplot(wage, aes(x = exper, y = wage_2022))+ 
   geom_line(data=wage %>% 
     filter(female == 1), (aes(color = 'women')))+
   geom_line(data=wage %>% filter(female == 0), (aes(color = 'men', alpha = 0.5)))+
