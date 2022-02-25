@@ -6,9 +6,136 @@ output: html_document
 ---
 
 ```{r}
+#Data Visualization 1
 
-test<-CA_Labor
+library (ggplot2)
+library(tidyverse)
+library(haven)
 
+wage<-read_dta("WAGE1.DTA")
+
+#Adjusting currency to 2022 purchasing power
+
+wage<-wage%>%
+  mutate(wage_2022 = wage*4.96)
+
+#Creating Visualization 1
+
+
+ggplot(wage, aes(x = exper, y = wage_2022))+ 
+  geom_line(data=wage %>% 
+    filter(female == 1), (aes(color = 'women')))+
+  geom_line(data=wage %>% filter(female == 0), (aes(color = 'men', alpha = 0.5)))+
+  labs(title = "Wage by Experience for Women and Men",
+          x="Years of Experience",
+          y="Wage (USD, Adjusted 2022 PP)",
+subtitle = "Data Population Survey 1976",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional Stata datasets for econometrics wage1, Boston College Department of Economics.")+
+  scale_color_manual(name='Gender',
+                     values=c('women'='purple',
+                      'Men'='black'))
+
+#Description:
+
+#This visualization shows hourly wage level by year of expected experience for both men and women. Women are represented by the purple line, while men are represented by the black line. The disparity between wage earned by men and women is observed at almost every level of experience, with exceptions near 1, 7 and 12 years of experience.
 
 
 ```
+```{r}
+
+#Data Visualization 2
+
+#Recoding Gender
+wage<-wage%>%
+  mutate(gender = case_when(
+    female == 0 ~ "Male",
+    female == 1 ~ "Female"
+  ))
+
+#Creating Visualization 2
+
+wage%>%
+  ggplot()+
+  geom_point(mapping = aes(x = educ, y=wage, color=as.character(nonwhite)))+
+  geom_smooth(aes(x = educ, y = wage))+
+  facet_grid(~gender, labeller = label_both)+
+  labs(title = "Wage by Education Level, Male and Female",
+  subtitle = "Data Population Survey 1976",
+          x="Years of Education",
+          y="Wage (USD, Adjusted 2022 PP)",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional  Stata datasets for econometrics wage1, Boston College   
+Department of Economics.")
+
+
+#Description:
+
+#This visualization illustrates the relationship between education level and wage (adjusted to 2022 purchasing power). The facet grid function shows compares the relationship between education level and wage for both men and women, side by side. For both genders, wage increases as years of education increases (shown by the line of best fit). Observations representing non-white individuals are shown in blue to show disparities in education and wage level by race. 
+
+```
+
+```{r}
+#Visualization 3
+
+wage<-wage%>%
+  mutate(earnings_bracket = case_when
+         (wage_2022 < 12.00 ~ "Low Earnings", 
+          wage_2022 >= 12.00 & wage_2022 < 18.00 ~ "Moderate Earnings", wage_2022 >= 18.00 ~ "High Earnings"))
+
+wage<-wage %>%
+  mutate(level_education = case_when
+         (educ <= 11 ~ "Low Education", 
+         educ >= 12 & educ <= 14 ~ "Moderate Education", educ >= 15 ~ "High Education"))
+
+
+wage%>%
+  group_by(earnings_bracket)%>%
+  ggplot()+
+  geom_bar(aes(x=earnings_bracket, fill=gender))+
+  facet_wrap(~level_education)+
+  theme(panel.spacing = unit(2, "lines"))+
+  scale_x_discrete(expand = expand_scale(add = 0.5)) +
+  labs(title = "Wage in Women as a Function of Education(Education", subtitle = "Data Pulled from 1976 Survey", 
+       x= "Earnings Bracket", caption = "Wage Adjsuted For the year 2022")
+
+
+```
+```{r}
+
+#Visualization 4 
+
+#Recoding Field
+wage<-wage%>%
+  mutate(Field=case_when(
+         construc==1 ~ "Construction",
+         ndurman==1 ~ "Manufacturing",
+         trcommpu==1 ~ "Transportation",
+         trade==1 ~ "Wholesale or Retail",
+         services==1 ~ "Service",
+         profserv==1 ~ "Professional Service"))
+
+#Recoding smsa
+wage<-wage%>%
+  mutate(Metropolitan_Area=case_when(
+    smsa==1 ~ "Lives in Metropolitan Area",
+    smsa==0 ~ "Does Not Live in Metropolitan Area"
+  ))
+
+#Creating Visualization 
+
+wage%>%
+  ggplot(aes(wage_2022, fill = Field))+
+  geom_histogram(binwidth = 10)+
+  facet_wrap(~Metropolitan_Area)+
+   labs(title = "Wage by Area and Career Field",
+  subtitle = "Data Population Survey 1976",
+          x="Wage Level (USD, Adjusted 2022 PP)",
+          y="Count)",
+caption = "Jeffrey M. Wooldridge, 2000. 'Wage1,' Instructional  Stata datasets for econometrics wage1, Boston College   
+Department of Economics.")
+
+  
+
+```
+
+```
+
